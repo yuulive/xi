@@ -46,12 +46,12 @@ impl<T> Listeners<T> {
 /// ## Subscription lifetimes
 ///
 /// Every combinator _subscribes_ to events from its parent stream. It is basically the
-/// same as calling `.subscribe()` but with an important twist. Froop reference counts
+/// same as calling `.subscribe()` but with an important twist. Xi reference counts
 /// the number of children alive to determine when to unsubscribe.
 ///
 /// Example:
 /// ```
-/// use froop::{Sink, Stream};
+/// use xi::{Sink, Stream};
 ///
 /// let sink: Sink<u32> = Stream::sink();
 /// let stream = sink.stream();
@@ -70,7 +70,7 @@ impl<T> Listeners<T> {
 ///
 /// Example:
 /// ```
-/// use froop::{Sink, Stream};
+/// use xi::{Sink, Stream};
 ///
 /// let sink: Sink<u32> = Stream::sink();
 /// let stream = sink.stream();

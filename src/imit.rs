@@ -22,7 +22,7 @@ use crate::{MemoryMode, Stream, Subscription};
 ///
 /// These components would be in different files, but here's a distilled example:
 /// ```
-/// use froop::{Stream, Sink};
+/// use xi::{Stream, Sink};
 ///
 /// enum DriverIn {
 ///   // ... event type of input _from_ the driver.
@@ -111,12 +111,12 @@ impl<T: Clone> Imitator<T> {
     /// and they all receive the events from the imitated stream.
     ///
     /// ```
-    /// let imitator = froop::Stream::imitator();
+    /// let imitator = xi::Stream::imitator();
     ///
     /// let coll1 = imitator.stream().collect();
     /// let coll2 = imitator.stream().collect();
     ///
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     /// let stream = sink.stream();
     ///
     /// imitator.imitate(&stream);

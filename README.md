@@ -1,6 +1,6 @@
-# Froop
+# xi
 
-A functional reactive stream library for rust.
+Xi is a functional reactive stream library for rust.
 
 * Small (~20 operations)
 * Synchronous
@@ -21,7 +21,7 @@ defined by Conal Elliot, but as a paradigm that is both functional and reactive.
 ## Example
 
 ```rust
-use froop::{Sink, Stream};
+use xi::{Sink, Stream};
 
 // A sink is an originator of events that form a stream.
 let sink: Sink<u32> = Stream::sink();
@@ -55,21 +55,21 @@ Libraries that deals with streams as values-over-time (or events) often conflate
 idea of moving data from point A to B, with the operators that transform the data. The
 result is that the library must deal with queues of data, queue lengths and backpressure.
 
-_Froop has no queues_
+_xi has no queues_
 
-Every `Sink::update()` of data into the tree of operations executes synchronously. Froop
+Every `Sink::update()` of data into the tree of operations executes synchronously. xi
 has no operators that dispatches "later", i.e. no `delay()` or other time shifting
 operations.
 
-That also means froop also has no internal threads, futures or otherwise.
+That also means xi also has no internal threads, futures or otherwise.
 
 ## Thread safe
 
-Every part of the froop tree is thread safe. You can move a `Sink` into another thread,
+Every part of the xi tree is thread safe. You can move a `Sink` into another thread,
 or subscribe and propagate on a UI main thread. The thread that calls `Sink::update()` is
 the thread executing the entire tree.
 
-That safety comes at a cost, froop is not a zero cost abstraction library. Every part of
+That safety comes at a cost, xi is not a zero cost abstraction library. Every part of
 the tree is protected by a mutex lock. This is fine for most applications since a lock
 without contention is not much overhead in the execution. But if you plan on having
 lots of threads simultaneously updating many values into the tree, you might
@@ -77,9 +77,9 @@ experience a performance hit due to lock contention.
 
 ## Be out of your way
 
-Froop tries to impose a minimum of cognitive load when using it.
+xi tries to impose a minimum of cognitive load when using it.
 
 * Every operator is an `FnMut(&T)` to make it the most usable possible.
 * Not require `Sync` and/or `Send` on operator functions.
-* Froop stream instances themselves are `Sync` and `Send`.
+* xi stream instances themselves are `Sync` and `Send`.
 * Impose a minimum of constraints the event value `T`.

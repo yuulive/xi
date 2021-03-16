@@ -3,7 +3,7 @@ extern crate criterion;
 
 use criterion::Criterion;
 
-use froop::Stream;
+use xi::Stream;
 
 fn map_benchmark(c: &mut Criterion) {
     let sink = Stream::sink();

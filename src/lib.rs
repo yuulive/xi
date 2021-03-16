@@ -19,7 +19,7 @@
 //! ## Example
 //!
 //! ```
-//! use froop::{Sink, Stream};
+//! use xi::{Sink, Stream};
 //!
 //! // A sink is an originator of events that form a stream.
 //! let sink: Sink<u32> = Stream::sink();
@@ -53,21 +53,21 @@
 //! idea of moving data from point A to B, with the operators that transform the data. The
 //! result is that the library must deal with queues of data, queue lengths and backpressure.
 //!
-//! _Froop has no queues_
+//! _Xi has no queues_
 //!
 //! Every [`Sink::update()`](struct.Sink.html#method.update) of data into the tree of
-//! operations executes synchronously. Froop has no operators that dispatches "later",
+//! operations executes synchronously. Xi has no operators that dispatches "later",
 //! i.e. no `delay()` or other time shifting operations.
 //!
-//! That also means froop also has no internal threads, futures or otherwise.
+//! That also means xi also has no internal threads, futures or otherwise.
 //!
 //! ## Thread safe
 //!
-//! Every part of the froop tree is thread safe. You can move a `Sink` into another thread,
+//! Every part of the xi tree is thread safe. You can move a `Sink` into another thread,
 //! or subscribe and propagate on a UI main thread. The thread that calls `Sink::update()` is
 //! the thread executing the entire tree.
 //!
-//! That safety comes at a cost, froop is not a zero cost abstraction library. Every part of
+//! That safety comes at a cost, xi is not a zero cost abstraction library. Every part of
 //! the tree is protected by a mutex lock. This is fine for most applications since a lock
 //! without contention is not much overhead in the execution. But if you plan on having
 //! lots of threads simultaneously updating many values into the tree, you might
@@ -75,11 +75,11 @@
 //!
 //! ## Be out of your way
 //!
-//! Froop tries to impose a minimum of cognitive load when using it.
+//! Xi tries to impose a minimum of cognitive load when using it.
 //!
 //! * Every operator is an `FnMut(&T)` to make it the most usable possible.
 //! * Not require `Sync` and/or `Send` on operator functions.
-//! * Froop stream instances themselves are `Sync` and `Send`.
+//! * Xi stream instances themselves are `Sync` and `Send`.
 //! * Impose a minimum of constraints the event value `T`.
 //!
 //! ## Subscription lifetimes
@@ -127,7 +127,7 @@ impl<T> Stream<T> {
     /// Create a sink that is used to push values into a stream.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// // collect values going into the sink
     /// let coll = sink.stream().collect();
@@ -146,7 +146,7 @@ impl<T> Stream<T> {
     /// Create a stream with memory that only emits one single value to anyone subscribing.
     ///
     /// ```
-    /// let value = froop::Stream::of(42);
+    /// let value = xi::Stream::of(42);
     ///
     /// // both collectors will receive the value
     /// let coll1 = value.collect();
@@ -170,7 +170,7 @@ impl<T> Stream<T> {
     /// Create a stream that never emits any value and never ends.
     ///
     /// ```
-    /// use froop::Stream;
+    /// use xi::Stream;
     ///
     /// let never: Stream<u32> = Stream::never();
     /// let coll = never.collect();
@@ -195,7 +195,7 @@ impl<T> Stream<T> {
     /// The memory is not inherited to child combinators. I.e.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     /// sink.update(0);
     ///
     /// // This stream has memory.
@@ -228,7 +228,7 @@ impl<T> Stream<T> {
     /// the stream ends.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     /// let stream = sink.stream();
     ///
     /// let handle = std::thread::spawn(move || {
@@ -268,7 +268,7 @@ impl<T> Stream<T> {
     /// Collect events into a `Collector`. This is mostly interesting for testing.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// // collect all values emitted into the sink
     /// let coll = sink.stream().collect();
@@ -308,7 +308,7 @@ impl<T> Stream<T> {
     /// This clones every event to compare with the next.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// let deduped = sink.stream().dedupe();
     ///
@@ -332,7 +332,7 @@ impl<T> Stream<T> {
     /// Dedupe stream by some extracted value.
     ///
     /// ```
-    /// use froop::{Stream, Sink};
+    /// use xi::{Stream, Sink};
     ///
     /// #[derive(Clone, Debug)]
     /// struct Foo(&'static str, usize);
@@ -393,7 +393,7 @@ impl<T> Stream<T> {
     /// Drop an amount of initial values.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// // drop 2 initial values
     /// let dropped = sink.stream().drop(2);
@@ -422,7 +422,7 @@ impl<T> Stream<T> {
     /// the resulting stream emits all events.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// // drop initial odd values
     /// let dropped = sink.stream().drop_while(|v| v % 2 == 1);
@@ -463,7 +463,7 @@ impl<T> Stream<T> {
     /// Produce a stream that ends when some other stream ends.
     ///
     /// ```
-    /// use froop::Stream;
+    /// use xi::Stream;
     ///
     /// let sink1 = Stream::sink();
     /// let sink2 = Stream::sink();
@@ -500,7 +500,7 @@ impl<T> Stream<T> {
     /// Filter out a subset of the events in the stream.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// // keep even numbers
     /// let filtered = sink.stream().filter(|v| v % 2 == 0);
@@ -540,7 +540,7 @@ impl<T> Stream<T> {
     /// The result is always a "memory" stream.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// let folded = sink.stream()
     ///     .fold(40.5, |prev, next| prev + (*next as f32) / 2.0);
@@ -604,7 +604,7 @@ impl<T> Stream<T> {
     /// Emits the last seen event when the stream closes.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// let coll = sink.stream().last().collect();
     ///
@@ -640,7 +640,7 @@ impl<T> Stream<T> {
     /// Transform events.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// let mapped = sink.stream().map(|v| format!("yo {}", v));
     ///
@@ -674,7 +674,7 @@ impl<T> Stream<T> {
     /// For every event, emit a static value.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// let mapped = sink.stream().map_to(42.0);
     ///
@@ -696,7 +696,7 @@ impl<T> Stream<T> {
     /// Merge events from a bunch of streams to one stream.
     ///
     /// ```
-    /// use froop::Stream;
+    /// use xi::Stream;
     ///
     /// let sink1 = Stream::sink();
     /// let sink2 = Stream::sink();
@@ -743,7 +743,7 @@ impl<T> Stream<T> {
     /// Make a stream in memory mode. Each value is remembered for future subscribers.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// let rem = sink.stream().remember();
     ///
@@ -782,7 +782,7 @@ impl<T> Stream<T> {
     /// On every event in this stream, combine with the last value of the other stream.
     ///
     /// ```
-    /// use froop::Stream;
+    /// use xi::Stream;
     ///
     /// let sink1 = Stream::sink();
     /// let sink2 = Stream::sink();
@@ -829,7 +829,7 @@ impl<T> Stream<T> {
     /// Prepend a start value to the stream. The result is a memory stream.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// sink.update(0); // lost
     ///
@@ -854,7 +854,7 @@ impl<T> Stream<T> {
     /// Take a number of events, then end the stream.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// let take2 = sink.stream().take(2);
     ///
@@ -879,7 +879,7 @@ impl<T> Stream<T> {
     /// Take events from the stream as long as a condition holds true.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// // take events as long as they are even
     /// let take = sink.stream().take_while(|v| *v % 2 == 0);
@@ -916,7 +916,7 @@ impl<T> Stream<T> {
     /// Stalls calling thread until the stream ends.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     /// let stream = sink.stream();
     ///
     /// std::thread::spawn(move || {
@@ -955,7 +955,7 @@ impl<T> Stream<Stream<T>> {
     /// stream "interrupts" the previous stream.
     ///
     /// ```
-    /// use froop::{Stream, Sink};
+    /// use xi::{Stream, Sink};
     ///
     /// let sink1: Sink<Stream<u32>> = Stream::sink();
     /// let sink2: Sink<u32> = Stream::sink();
@@ -1008,7 +1008,7 @@ impl<T> Stream<Stream<T>> {
     /// For each new stream, keep the previous, and subscribe to the new.
     ///
     /// ```
-    /// use froop::{Stream, Sink};
+    /// use xi::{Stream, Sink};
     ///
     /// let sink1: Sink<Stream<u32>> = Stream::sink();
     /// let sink2: Sink<u32> = Stream::sink();
@@ -1075,7 +1075,7 @@ impl<T> Sink<T> {
     /// and they all receive the events from the sink.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     ///
     /// let stream1 = sink.stream();
     /// let stream2 = sink.stream();
@@ -1099,13 +1099,13 @@ impl<T> Sink<T> {
     /// Update a value into this sink.
     ///
     /// The execution of the combinators "hanging" off this sink is (thread safe) and
-    /// synchronous. In other words, there is nothing in froop itself that will still be
+    /// synchronous. In other words, there is nothing in xi itself that will still be
     /// "to do" once the `update()` call returns.
     ///
     /// Each value is wrapped in an `Option` towards subscribers of the streams.
     ///
     /// ```
-    /// let sink = froop::Stream::sink();
+    /// let sink = xi::Stream::sink();
     /// let stream = sink.stream();
     ///
     /// stream.subscribe(|v| {

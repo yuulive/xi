@@ -1,5 +1,5 @@
 [package]
-name = "froop"
+name = "xi"
 version = "0.1.1"
 authors = ["Martin Algesten <martin@algesten.se>"]
 edition = "2018"
@@ -8,7 +8,7 @@ description = "A functional reactive stream library for rust"
 readme = "README.md"
 keywords = ["frp", "functional", "fp", "reactive", "stream"]
 categories = ["data-structures"]
-repository = "https://github.com/algesten/froop"
+repository = "https://github.com/yuulive/xi"
 
 [dependencies]
 
